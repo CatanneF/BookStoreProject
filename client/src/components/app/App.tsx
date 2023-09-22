@@ -2,7 +2,7 @@
 // import ProtectedRoute from "../routing/ProtectedRoute";
 import { AccessTokenProvider } from "../../contexts/AccessTokenContext";
 import Router from "../routing/Router";
-import { BrowserRouter } from "react-router-dom";
+// import { BrowserRouter } from "react-router-dom";
 
 // import Login from "../login/Login";
 // import Bookshelf from "../bookshelf/Bookshelf";
@@ -17,11 +17,11 @@ function App() {
 
   
   return (
-    <BrowserRouter>
+    
       <AccessTokenProvider>
         <Router />
       </AccessTokenProvider>
-    </BrowserRouter>  
+    
   );
 }
 

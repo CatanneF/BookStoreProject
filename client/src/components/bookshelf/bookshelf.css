@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&family=Neuton:wght@200;400;700&family=Poppins:wght@200;300;600&display=swap');
+
+body {
+    margin-top: 10%;
+    font-family: 'Fira Sans', sans-serif;
+    color: #3E3E3E;
+    padding: 25px;
+    
+}
+
+h1 {
+    text-align: center;
+}
+
+.shelf-container {
+    margin: 40px auto 80px auto;
+    width: 70%;
+}
+
+.book-container {
+    background-color: white;
+    padding: 30px;
+    margin: 20px 0;
+    display: flex;
+    
+}
+
+.details-container {
+    margin: 40px auto;
+    width: 50%;
+    padding: 10px 30px;
+
+}
+
+.book-details {
+    display: flex;
+    flex-direction: column;
+    /* background-color: lightcoral; */
+}
+p {
+    font-size: .8em;;
+}
+
+.footer { 
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+}
+
+.logout-btn {
+    background-color: transparent;
+    color: #8e8e8e;
+    font-weight: 600;
+}

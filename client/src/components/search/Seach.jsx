@@ -9,12 +9,32 @@ function Search () {
 
     const { logout } = useContext(AccessTokenContext);
 
-    // const location = useLocation();
-    // const bookResults = location.bookResults 
+    const location = useLocation();
+    const bookResults = location.state?.bookResults 
+
+    console.log(bookResults)
     return (
         <>
             <Navbar />
-            <div className="book-container">
+            {bookResults && bookResults.map((book) => {
+              return (
+                <div>
+                  <div className="bookImg">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}} className="bookLink">
+                      <img src={book.imageLinks} alt="thumbnail of book cover"/>
+                    </Link>
+                  </div>
+                  <div className="bookTitle">
+                  <Link to={`/book/${book.id}`} state={{bookId: book.id}} className="bookLink">
+                      <p>{book.title}</p>
+                    </Link>
+                  </div>
+                
+                
+                </div>
+              )
+            })}
+            {/* <div className="book-container">
                     <div className="book-img">
                       <Link to={`/book/${book.id}`} className="bookLink">
                         <img src={book.imageLinks.thumbnail} alt="thumbnail of book cover"/>
@@ -36,7 +56,7 @@ function Search () {
                 >
                     Logout
                 </button>
-            </div>
+            </div> */}
         </>
     );
 };

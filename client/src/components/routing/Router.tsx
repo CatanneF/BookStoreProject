@@ -5,13 +5,13 @@ import Login from "../login/Login";
 import Bookshelf from "../bookshelf/Bookshelf";
 import Bookdetails from "../book details/Bookdetails";
 import Search from "../search/Seach";
-import FileNotFound from "../FileNotFound";
+// import FileNotFound from "../FileNotFound";
 
 function Router() {
   return (
     <Routes>
       {/* The ProtectedRoute will redirect the user to the login form if they haven't logged in. */}
-        <Route
+         <Route
             path="/bookshelf"
             element={
              <ProtectedRoute>
@@ -19,6 +19,7 @@ function Router() {
              </ProtectedRoute>
             }
         />
+        
 
         <Route
             path="/book/:bookId"
@@ -28,6 +29,7 @@ function Router() {
             </ProtectedRoute>
             }
         />
+       
 
         <Route
             path="/search"
@@ -36,19 +38,19 @@ function Router() {
                 <Search />
             </ProtectedRoute>
             }
-        />
+        /> 
 
       <Route path="/" element={<Login />} />
 
       {/* If no matches, display a 404 File Not Found page if logged in. If not logged in, the <ProtectedRoute /> will redirect to the login form. */}
-      <Route
+      {/* <Route
         path="*"
         element={
           <ProtectedRoute>
             <FileNotFound />
           </ProtectedRoute>
         }
-      />
+      /> */}
     </Routes>
   );
 }

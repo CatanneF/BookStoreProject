@@ -1,3 +1,56 @@
-.link-nav {
-    background-color: aquamarine;
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&family=Neuton:wght@200;400;700&family=Poppins:wght@200;300;600&display=swap');
+
+body {
+    font-family: 'Fira Sans', sans-serif;
+    color: #3E3E3E;
+    background-color: #F4F0F0;
+}
+
+nav {
+    top: 0;
+    left: 0;
+    margin: 0;
+    position: fixed;
+    padding: 20px 18px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    background-color:#AC5703;
+    color: white;
+    text-decoration: none;
+}
+
+.bookshelfLink {
+    color: white;
+    text-decoration: none;
+    margin-left: 6%;
+}
+
+.search {
+    justify-content: flex-end;
+    
+}
+
+.navA {
+    justify-content: flex-start; 
+    flex-grow: 5;
+    align-items: center;
+    padding: 10px 30px;
+    font-size: 1.3em;
+} 
+
+.navB {
+    justify-content: flex-start;
+    flex-grow: 1;
+    display:flex;
+}
+
+.searchText {
+    margin-right: 10px;
+    font-size: .9em;
+}
+
+.search {
+    margin-top: 10px;
+    width: 200px;
 }

@@ -57,8 +57,9 @@ function Login() {
    
 
         return (
-            <div className="container">
-                <h1>Login</h1>
+            <div className="signinContainer">
+              <h1>Login to your account</h1>
+              <div className="login-container">
                 <form className="login-form" method="POST" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="username" className="form-label">
@@ -101,6 +102,7 @@ function Login() {
                         {errorMessage}
                     </div>
                 )}
+              </div>
             </div>   
         );
     
