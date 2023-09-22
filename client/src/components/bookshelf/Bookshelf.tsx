@@ -1,5 +1,5 @@
 import { useState, useContext, useCallback, useEffect, ChangeEvent } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AccessTokenContext } from "../../contexts/AccessTokenContext";
 import axios from "axios";
 import Navbar from "../navbar/Navbar";
@@ -8,43 +8,55 @@ import Navbar from "../navbar/Navbar";
 export interface IBookshelf {
     id: string;
     title: string;
-    author: string;
+    authors: string;
     imageUrl: string;
     shelf: string
     [key: string]: string;
+    thumbnail: string;
+    imageLinks: [][] ;
+
 }
   
 export interface IBookshelfResponse {
   [shelf: string]: IBookshelf[];
   data: IBookshelf[];
+  
 }
 
 
 function Bookshelf () {
   
   const { getToken, logout } = useContext(AccessTokenContext);
-  const [bookshelf, setBookshelf] = useState<IBookshelf[]>([]);
+  const [wantToRead, setWantToRead] = useState<IBookshelf[]>([]);
+  const [currentlyReading, setCurrentlyReading] = useState<IBookshelf[]>([]);
+  const [read, setRead] = useState<IBookshelf[]>([]);
+  // const [bookshelf, setBookshelf] = useState<IBookshelf[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [shelfKey, setShelfKey] = useState("");
   const [bookId, setBookId] = useState("");
-  const location = useLocation();
-  const username = location.username;
-    
+ 
+  
+  
+  console.log(read)
   
     
 // Get bookshelves
   const fetchBookshelf = useCallback(async () => {
         try {
-            const response = await axios.request<IBookshelfResponse>({
+             const response = await axios.request<IBookshelfResponse>({
                 method: "GET",
                 url: "/api/bookshelf",
                 headers: {
+                  "Content-Type": "application/json",
                   Authorization: `Bearer ${getToken()}`,
+
                 },
             }); 
-            const getbookshelf = response.data.data;
-            setBookshelf(getbookshelf)
-            console.log(bookshelf);
+            setWantToRead(response.data.books.wantToRead)
+            setCurrentlyReading(response.data.books.currentlyReading)
+            setRead(response.data.books.read)
+        
+            
           } catch (error) {
             console.error(error);
             setErrorMessage("Oh no! An unexpected error occurred.");
@@ -56,52 +68,54 @@ function Bookshelf () {
       }, [fetchBookshelf]);
 
 
-// Change book to another shelf
-    //Get book id and shelf
-    const changeShelf:IBookshelfResponse (e: ChangeEvent<HTMLSelectElement>, book) => {
-      console.log(e);
-      console.log(book)
-      setShelfKey(e);
-      setBookId(book.id)
-      updateShelf(shelfKey, bookId);
 
-    }
-    // Request to change shelf
-    const updateShelf = async (shelfKey, bookId) => {
+// Change book to another shelf
+    const updateShelf = async (shelfKey: string, bookId: string) => {
         try {
-        const resposne= await axios(`/api/book/${bookId}/${shelfKey}`, {
+        const response= await axios(`/api/bookshelf/${bookId}/${shelfKey}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${getToken()}`,                    
-                },
-                
+                },   
             });
+            console.log(response.data)
+            fetchBookshelf();
         }catch (error) {
         console.error(error);
         setErrorMessage("Oh no! An unexpected error occurred.");
         };
-    };
-
+    }
         useEffect (() => {
             updateShelf(shelfKey, bookId);
         }, []);
         
-   // Delete book from shelves     
-    const deleteBook = async (bookId) => {
+  // Delete book from shelves     
+
+  const sayHi = (bookId: string) => {
+    console.log("clicked delete")
+    console.log(bookId)
+  }
+    const deleteBook = async (bookId: string) => {
       try {
-        const resposne= await axios(`/api/book/${bookId}`, {
+        const response= await axios(`/api/bookshelf/${bookId}`, {
               method: "DELETE",
               headers: {
+                "Content-Type": "application/json",
                   Authorization: `Bearer ${getToken()}`,                    
-              },
-              
+              }, 
           });
+          console.log(response.data)
+          fetchBookshelf()
         }catch (error) {
           console.error(error);
           setErrorMessage("Oh no! An unexpected error occurred.");
         };
       };
+
+      useEffect (() => {
+        deleteBook(bookId);
+    }, []);
 
 
     
@@ -109,68 +123,104 @@ function Bookshelf () {
       <>
       <Navbar />
         <div className="bookshelf-container">
-          <h1>`${username}'s Bookshelf`</h1>
-            {/* bookshelf.map((books)) => { */}  
-              
-              <div className="shelf-container">
-                <h2>Shelf name</h2>
-                {/* books.map(book) => { } */}
+          <h1> My Bookshelf</h1>
+    {/* Want to Read Shelf */}
+          <div className="shelf-container">
+            <h2>Want to Read</h2>
+            {wantToRead.map((book) => {
+              return (  
                 <div className="book-container">
                   <div className="book-img">
-                    <NavLink to={`/book/${book.id}`} className="bookLink">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}} className="bookLink">
                       <img src={book.imageLinks.thumbnail} alt="thumbnail of book cover"/>
-                    </NavLink>
+                    </Link>
                   </div>
-                    
                   <div className="book-details">
-                    <NavLink to={`/book/${book.id}`} className="bookLink">
-                      <h3>`${book.title}`</h3>
-                    </NavLink>
-                    <p>`${book.author}`</p>
-                    <div className="shelf-selector">
-                    <select id="dropdown" type="text" onChange={(e) => changeShelf(e.target.value, book)} >
-                      <option value="wantToRead"></option>
-                      <option value="currentlyReading"></option>
-                      <option value="read"></option>
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}}  className="bookLink">
+                      <h3>{book.title}</h3>
+                    </Link>
+                    <h4>{book.authors[0]}</h4>
+                    <h5>Change Shelf:</h5>
+                    <select id="dropdown" onChange={(e) => updateShelf(e.target.value, book.id)} >
+                    <option value="wantToRead">Want to Read</option>
+                      <option value="read">Read</option>
+                      <option value="currentlyReading">Currently Reading</option>
                     </select>
-                    </div>
-                    <button onClick={deleteBook(book.Id)}>X Delete Book</button>   
                   </div>
+                  <div><button onClick={() => deleteBook(book.id)}>X Delete Books</button></div>   
                 </div>
-              </div>
-          </div>
+              );
+            })}    
+          </div> 
+    {/*Currently Reading Shelf */}
+          <div className="shelf-container">
+            <h2>Currently Reading</h2>
+            {currentlyReading.map((book) => {
+              return (  
+                <div className="book-container">
+                  <div className="book-img">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}} className="bookLink">
+                      <img src={book.imageLinks.thumbnail} alt="thumbnail of book cover"/>
+                    </Link>
+                  </div>
+                  <div className="book-details">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}}  className="bookLink">
+                      <h3>{book.title}</h3>
+                    </Link>
+                    <h4>{book.authors[0]}</h4>
+                    <select id="dropdown" onChange={(e) => updateShelf(e.target.value, book.id)} >
+                      <option value="currentlyReading">Currently Reading</option>
+                      <option value="read">Read</option>
+                      <option value="wantToRead">Want to Read</option>
+                      
+                    </select>
+                  </div>
+                  <div><button onClick={() => deleteBook(book.id)}>X Delete Book</button></div>   
+                </div>
+              );
+            })}   
+          </div> 
+    {/* Read Shelf */}
+          <div className="shelf-container">
+            <h2>Read</h2>
+            {read.map((book) => {
+              return (  
+                <div className="book-container">
+                  <div className="book-img">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}} className="bookLink">
+                      <img src={book.imageLinks.thumbnail} alt="thumbnail of book cover"/>
+                    </Link>
+                  </div>
+                  <div className="book-details">
+                    <Link to={`/book/${book.id}`} state={{bookId: book.id}}  className="bookLink">
+                      <h3>{book.title}</h3>
+                    </Link>
+                    <h4>{book.authors[0]}</h4>
+                    <select id="dropdown" onChange={(e) => updateShelf(e.target.value, book.id)} >
+                      <option value="read">Read</option>
+                      <option value="wantToRead">Want to Read</option>
+                      <option value="currentlyReading">Currently Reading</option>
+                    </select>
+                  </div>
+                  <div><button onClick={() => deleteBook(book.id)}>X Delete Bookk</button></div>   
+                </div>
+              );
+            })}    
+          </div> 
+        </div>
             
         <div className="footer">
           <button
             type="button"
-            className="btn btn-primary mb-2"
+            className="logout-btn"
             onClick={() => logout()}
           >
             Logout
           </button>
         </div>
+       
         
       </>
-
-        {/* <Shelf
-            bookshelf = {bookshelf}
-            setBookshelf = {setBookshelf}
-            shelfName = "wantToRead"
-            title = "Want to Read"
-            />
-          <Shelf
-            bookshelf = {bookshelf}
-            setBookshelf = {setBookshelf}
-            shelfName = "currentlyReading"
-            title = "Currently Reading"
-          />
-          <Shelf
-            bookshelf = {bookshelf}
-            setBookshelf = {setBookshelf}
-            shelfName = "read"
-            title = "Read"
-          /> */}
-
       );
 
 };

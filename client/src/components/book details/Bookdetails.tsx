@@ -1,51 +1,66 @@
 import { useContext, useEffect, useState, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 // import { useParams, Link } from "react-router-dom";
 import Navbar from "../navbar/Navbar";
 import { AccessTokenContext } from "../../contexts/AccessTokenContext";
 import axios from "axios";
+// import { IBookshelfResponse } from "../bookshelf/Bookshelf";
 // import FileNotFound from "../FileNotFound";
+import "../bookshelf/bookshelf.css"
 
 
     interface IBook {
         id: string;
         title: string;
-        author: string;
+        authors: string;
         imageUrl: string;
-        shelf: string
         description: string;
         publisher: string;
         publishedDate: string;
-        imageLinks: {}[];
         thumbnail: string;
+        imageLinks: string;
         [key: string]: string;
     }
 
     interface IBookResponse {
         data: IBook[];
+        book: IBook[];
       }
 
 
 function BookDetails () {
 
     const { getToken, logout } = useContext(AccessTokenContext);
-    // const {bookId } = useParams;
-    // const book = books[bookId]
+    const location = useLocation();
+    const bookId: string = location.state?.bookId
+    
+   
 
     const [errorMessage, setErrorMessage] = useState("");
+    // const [bookDetails, setBookDetails] = useState([]);
+    const [displaySuccess, setDisplaySuccess] = useState(false);
+    
     const [bookDetails, setBookDetails] = useState<IBook[]>([]);
+    const [shelfKey, setShelfKey] = useState("");
+    console.log(bookDetails)
+    console.log(shelfKey)
+
+  console.log(bookId)
+   
 
 // Get book data/ details
-    const getBookDetails = useCallback(async () => {
+    const getBookDetails = useCallback(async (bookId: string) => {
         try {
           const response = await axios.request<IBookResponse>({
+            // const response = await axios.request<IBookResponse>({
             method: "GET",
-            url: "/api/book/:bookId",
+            url: `/api/book/${bookId}`,
             headers: {
               Authorization: `Bearer ${getToken()}`,
             },
           });
-          const books = response.data;
-          setBookDetails(books);
+        console.log(response.data);
+        setBookDetails([response.data.book])
         } catch (error) {
           console.error(error);
           setErrorMessage("Oh no! An unexpected error occurred.");
@@ -53,64 +68,90 @@ function BookDetails () {
       }, [getToken]);
     
       useEffect(() => {
-        getBookDetails();
+        getBookDetails(bookId);
       }, [getBookDetails]);
+
+   
 
 // Add book to a Shelf
     //Get book id and shelf
-    const changeShelf:IBookshelfResponse (e: ChangeEvent<HTMLSelectElement>, book) => {
-        console.log(e);
-        console.log(book)
-        setShelfKey(e);
-        setBookId(book.id)
-        updateShelf(shelfKey, bookId);
 
-    }
+    const addToShelf = async (shelfKey: string, bookId: string) => {
+      try {
+      const response= await axios(`/api/bookshelf/${bookId}/${shelfKey}`, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${getToken()}`,                    
+              },   
+          });
+          console.log(response.data)
+          displaySuccessMssg();
+          // fetchBookshelf();
+      }catch (error) {
+      console.error(error);
+      setErrorMessage("Oh no! An unexpected error occurred.");
+      };
+  }
+      useEffect (() => {
+          addToShelf(shelfKey, bookId);
+      }, []);
 
-    // Request to change shelf
-    const addToShelf = async (shelfKey, bookId) => {
-        try {
-        const response = await axios(`api/{bookId}/{shelfKey}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${getToken()}`,                    
-                },
-            });
-            console.log(response.data)
-        }catch (error) {
-        console.error(error);
-        setErrorMessage("Oh no! An unexpected error occurred.");
-        };
-    };
+      const displaySuccessMssg = () => {
+        setDisplaySuccess(true)
+      }
+    // const changeShelf:IBookshelfResponse(e: ChangeEvent<HTMLSelectElement>, book) => {
+    //     console.log(e);
+    //     console.log(book)
+    //     setShelfKey(e);
+    //     setBookId(book.id)
+    //     addToShelf(shelfKey, bookId);
 
-    
+    // }
+
+   
 
     return (
-        <div className="container">
-            <Navbar />
+      <>
+      <Navbar />
+      {/* Book Info */}
+        <div className="container">    
             <div className="details-container">
-                {/* bookDetails.map(book) => { */}
-                <div className="book-img">
-                    <img src="" alt="" />
-                </div>
-                <div className="book-details">
-                    <h2>`${book.title}`</h2>
-                    <h3>`Author: ${book.authors}`</h3>
-                    <p>`Description: ${bookDetails.description}`</p>
-                    <p>`Publisher: ${bookDetails.publisher}`</p>
-                    <p>`Published Date: ${bookDetails.publishedDate}`</p>
-                </div>
-                <div className="shelf-selector">
-                      <select id="dropdown" type="text" value={shelf} onChange={(e) => addToShelf(e.target.value, book)} >
-                        <option value="wantToRead"></option>
-                        <option value="currentlyReading"></option>
-                        <option value="read"></option>
-                      </select>
-                 </div>
-                
-            </div>
-            <div className="footer">
+                {bookDetails && bookDetails.map((book) => {
+                  return (
+                  
+                    <div className="book-container">
+                      <div className="book-title">
+                        <h1>{book.title}</h1></div>
+                        <div className="details-left">
+                            <div className="img-container">
+                              <img src={book.imageLinks.thumbnail} alt="thumbnail image of book covers" />
+                              <div className="shelf-selector">
+                              <h4>Add to Shelf:</h4>
+                                <select id="dropdown" onChange={(e) => addToShelf(e.target.value, book.id)} >
+                                <option value="">Add to Shelf</option>
+                                  <option value="wantToRead">Want to Read</option>
+                                  <option value="currentlyReading">Currently Reading</option>
+                                  <option value="read">Read</option>
+                                </select>
+                                {displaySuccess ? <p>✓ Added to shelf</p> : null}
+                              </div>
+                            </div>
+                          </div>
+                      <div className="book-details">
+                        
+                        <h3>Author: {book.authors[0]}</h3>
+                        <p>Description: {book.description}</p>
+                        <p>Publisher: {book.publisher}</p>
+                        <p>Published Date: {book.publishedDate}</p>
+                      </div>    
+                    </div>
+                  )
+                })}              
+            </div>      
+        </div>
+      {/* Footer */}
+        <div className="footer">
           <button
             type="button"
             className="btn btn-primary mb-2"
@@ -119,7 +160,7 @@ function BookDetails () {
             Logout
           </button>
         </div>
-        </div>
+        </>
     );
 }
 
