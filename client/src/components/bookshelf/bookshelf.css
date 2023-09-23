@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500&family=Neuton:wght@200;400;700&family=Poppins:wght@200;300;600&display=swap');
 
 body {
-    margin-top: 10%;
+    margin-top: 9%;
     font-family: 'Fira Sans', sans-serif;
     color: #3E3E3E;
     padding: 25px;
@@ -25,20 +25,66 @@ h1 {
     
 }
 
-.details-container {
-    margin: 40px auto;
-    width: 50%;
-    padding: 10px 30px;
-
+.book-img {
+    flex-grow: 1;
 }
 
 .book-details {
     display: flex;
     flex-direction: column;
-    /* background-color: lightcoral; */
+    padding: 0 40px;
+    flex-grow: 8;
 }
+
+.delete-btn {
+    flex-grow: 4;
+    margin: auto;
+    text-align: right;
+    min-width: 150px;
+}
+
+.deleteBtn {
+    font-size: .8em;
+    padding: 5px 5px;
+    margin: auto;
+    border-radius: 0px;
+    background-color:#f4f3f3;
+    color: #3E3E3E;
+   
+}
+
+
+h3 {
+    font-size: 1.4em;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    color: #3E3E3E;    
+}
+
+h4{
+    font-size: 1em;
+    font-weight: 400;
+}
+
+h5 {
+    margin-bottom: 8px;
+    font-size: .85em;
+}
+
 p {
-    font-size: .8em;;
+    font-size: .8em;
+}
+
+select {
+    width: 165px;
+    font-size: .9em;
+    font-weight: 600;
+    background-color:#f4f3f3;
+    border: #3E3E3E 1.3px solid;
+    border-radius: 3px;
+    padding: 2px 3px;
+    margin-top: 0;
 }
 
 .footer { 

@@ -1,0 +1,43 @@
+.bookdetails-container {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.details-right > h1 {
+    text-align: left;
+    
+}
+
+.details-container {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    margin-bottom: 80px;
+}
+
+.details-left {
+    flex-grow: 1;
+    padding: 30px;
+}
+
+.details-img {
+    margin-bottom: 30px;
+    margin-top: 30px;
+    
+}
+
+.details-right {
+    flex-grow: 5;
+    padding: 30px 100px 40px 50px
+}
+
+.details-right > h3 {
+    font-size: 1.1em;
+}
+
+.details-right > p {
+    font-size: .9em;
+    padding-top: 20px;
+    line-height: 22px;
+}
